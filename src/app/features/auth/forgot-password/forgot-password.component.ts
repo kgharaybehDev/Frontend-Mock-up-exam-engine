@@ -1,20 +1,62 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthService } from '../../../core/services/auth.service';
+import { InputFieldComponent } from '../../../shared/forms/input-field/input-field.component';
+import { ButtonComponent } from '../../../shared/components/button/button.component';
+import { FormErrorsComponent } from '../../../shared/forms/form-errors/form-errors.component';
+import { ToastService } from '../../../shared/components/toast/toast.service';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [RouterLink],
-  template: `
-    <div class="flex items-center justify-center min-h-screen bg-gray-50">
-      <div class="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-        <h1 class="text-2xl font-semibold text-center mb-6">Forgot Password</h1>
-        <p class="text-center text-gray-500">Password reset form coming soon.</p>
-        <p class="text-center mt-4">
-          <a routerLink="/auth/login" class="text-blue-500 hover:underline">Back to Login</a>
-        </p>
-      </div>
-    </div>
-  `,
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    InputFieldComponent,
+    ButtonComponent,
+    FormErrorsComponent,
+  ],
+  templateUrl: './forgot-password.component.html',
 })
-export class ForgotPasswordComponent {}
+export class ForgotPasswordComponent {
+  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly toast = inject(ToastService);
+
+  readonly isLoading = signal(false);
+  readonly serverError = signal<string | null>(null);
+  readonly isSuccess = signal(false);
+  readonly submittedEmail = signal('');
+
+  readonly form = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+  });
+
+  readonly emailControl = this.form.controls.email;
+
+  onSubmit() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.serverError.set(null);
+
+    const email = this.form.getRawValue().email;
+    this.submittedEmail.set(email);
+
+    this.authService.forgotPassword({ email }).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.isSuccess.set(true);
+        this.toast.success('Reset link sent!');
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.serverError.set(err.error?.error || err.message || 'Failed to send reset link. Please try again.');
+      },
+    });
+  }
+}

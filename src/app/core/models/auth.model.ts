@@ -66,3 +66,13 @@ export interface RegisterExpertResponseDto {
   email: string;
   isVerified: boolean;
 }
+
+export interface ForgotPasswordRequestDto {
+  email: string;
+}
+
+export interface ResetPasswordRequestDto {
+  email: string;
+  token: string;
+  newPassword: string;
+}

@@ -4,7 +4,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { toObservable } from '@angular/core/rxjs-interop';
 import type { ApiResponse } from '../models/api-response.model';
-import type { LoginRequestDto, LoginResponseDto, RefreshTokenRequestDto, RegisterRequestDto, RegisterResponseDto } from '../models/auth.model';
+import type { ForgotPasswordRequestDto, LoginRequestDto, LoginResponseDto, RefreshTokenRequestDto, RegisterRequestDto, RegisterResponseDto } from '../models/auth.model';
 import { API_BASE_URL } from '../tokens/api-url.token';
 
 const ACCESS_TOKEN_KEY = 'proexam_access_token';
@@ -45,6 +45,10 @@ export class AuthService {
     }
     const payload: RefreshTokenRequestDto = { refreshToken: token };
     return this.http.post<ApiResponse<LoginResponseDto>>(`${this.authApi}/refresh`, payload);
+  }
+
+  forgotPassword(payload: ForgotPasswordRequestDto) {
+    return this.http.post<ApiResponse<null>>(`${this.authApi}/forgot-password`, payload);
   }
 
   logout() {
