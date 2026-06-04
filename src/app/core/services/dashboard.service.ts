@@ -19,7 +19,9 @@ export class DashboardService {
 
   readonly recentAttempts = signal<CandidateAttemptDto[]>([]);
   readonly examCatalog = signal<ExamListItemDto[]>([]);
-  readonly isLoading = signal(false);
+  readonly attemptsLoading = signal(false);
+  readonly catalogLoading = signal(false);
+  readonly isLoading = computed(() => this.attemptsLoading() || this.catalogLoading());
 
   readonly stats = computed<DashboardStats>(() => {
     const attempts = this.recentAttempts();
@@ -37,8 +39,13 @@ export class DashboardService {
   });
 
   getExamCatalog() {
-    this.isLoading.set(true);
+    this.catalogLoading.set(true);
     return this.http.get<ApiResponse<PagedResult<ExamListItemDto>>>(`${this.apiBase}/api/v1/exams`);
+  }
+
+  getMyAttempts() {
+    this.attemptsLoading.set(true);
+    return this.http.get<ApiResponse<PagedResult<CandidateAttemptDto>>>(`${this.apiBase}/api/v1/candidates/me/attempts?pageSize=5`);
   }
 
   addRecentAttempt(attempt: CandidateAttemptDto) {

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -14,6 +14,18 @@ export class DashboardLayoutComponent {
 
   readonly user = this.authService.currentUser;
   readonly sidebarOpen = signal(false);
+
+  readonly greeting = computed(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  });
+
+  readonly displayName = computed(() => {
+    const u = this.user();
+    return u?.firstName || u?.email || 'User';
+  });
 
   readonly navLinks = [
     { path: '/candidate/dashboard', label: 'Dashboard', icon: 'grid' },

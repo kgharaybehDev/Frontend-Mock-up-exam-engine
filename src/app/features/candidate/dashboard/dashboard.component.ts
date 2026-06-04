@@ -1,15 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
-import { DashboardService } from '../../../core/services/dashboard.service';
+import { Router, RouterLink } from '@angular/router';
+import { DashboardService, type DashboardStats } from '../../../core/services/dashboard.service';
 import { ExamService } from '../../../core/services/exam.service';
+import { DashboardCardComponent } from '../../../shared/components/dashboard-card/dashboard-card.component';
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 
 @Component({
   selector: 'app-candidate-dashboard',
   standalone: true,
-  imports: [CardComponent, ButtonComponent, DatePipe],
+  imports: [DashboardCardComponent, CardComponent, ButtonComponent, DatePipe, RouterLink],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
@@ -21,6 +22,8 @@ export class DashboardComponent implements OnInit {
   readonly recentAttempts = this.dashboardService.recentAttempts;
   readonly stats = this.dashboardService.stats;
   readonly isLoading = this.dashboardService.isLoading;
+  readonly catalogLoading = this.dashboardService.catalogLoading;
+  readonly attemptsLoading = this.dashboardService.attemptsLoading;
 
   readonly statCards = [
     { label: 'Exams Taken', key: 'totalExamsTaken' as const, color: 'bg-blue-50 text-blue-600' },
@@ -30,18 +33,51 @@ export class DashboardComponent implements OnInit {
   ];
 
   ngOnInit() {
-    if (this.examCatalog().length === 0) {
-      this.dashboardService.getExamCatalog().subscribe({
-        next: (res) => {
-          if (res.success && res.data) {
-            this.dashboardService.examCatalog.set(res.data.items);
-          }
-          this.dashboardService.isLoading.set(false);
-        },
-        error: () => {
-          this.dashboardService.isLoading.set(false);
-        },
-      });
+    const catalogSub = this.dashboardService.getExamCatalog().subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.dashboardService.examCatalog.set(res.data.items);
+        }
+        this.dashboardService.catalogLoading.set(false);
+      },
+      error: () => this.dashboardService.catalogLoading.set(false),
+    });
+
+    const attemptsSub = this.dashboardService.getMyAttempts().subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.dashboardService.recentAttempts.set(res.data.items ?? []);
+        }
+        this.dashboardService.attemptsLoading.set(false);
+      },
+      error: () => this.dashboardService.attemptsLoading.set(false),
+    });
+  }
+
+  getCardValue(stats: DashboardStats, key: string): number | null {
+    if (key === 'averageScore' && stats.averageScore === 0 && this.recentAttempts().length === 0) return null;
+    return stats[key as keyof DashboardStats] as number;
+  }
+
+  getCardIcon(key: string): string {
+    return key;
+  }
+
+  statusClass(status: string): string {
+    switch (status) {
+      case 'completed': return 'bg-emerald-100 text-emerald-800';
+      case 'in-progress': return 'bg-amber-100 text-amber-800';
+      case 'failed': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-600';
+    }
+  }
+
+  statusLabel(status: string): string {
+    switch (status) {
+      case 'completed': return 'Passed';
+      case 'in-progress': return 'In Progress';
+      case 'failed': return 'Failed';
+      default: return status;
     }
   }
 
