@@ -11,7 +11,7 @@ export const roleGuard = (allowedRoles: string[]) => () => {
     return router.parseUrl('/auth/login');
   }
 
-  if (!allowedRoles.includes(user.role)) {
+  if (!allowedRoles.map((r) => r.toLowerCase()).includes(user.role.toLowerCase())) {
     return router.parseUrl('/');
   }
 
