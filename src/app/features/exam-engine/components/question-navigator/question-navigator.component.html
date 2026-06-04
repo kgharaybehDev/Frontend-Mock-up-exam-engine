@@ -1,0 +1,16 @@
+<nav aria-label="Question navigation" class="space-y-2">
+  <p class="text-sm font-medium text-gray-700">Question Navigator</p>
+  <div class="grid grid-cols-5 gap-2 sm:grid-cols-6">
+    @for (item of navItems(); track item.index) {
+      <button
+        type="button"
+        [class]="btnClass(item.status)"
+        [attr.aria-label]="'Go to question ' + (item.index + 1) + ' (' + (item.status | questionStatus) + ')'"
+        [attr.aria-current]="item.isCurrent ? 'true' : null"
+        (click)="navigateTo(item.index)"
+      >
+        {{ item.index + 1 }}
+      </button>
+    }
+  </div>
+</nav>

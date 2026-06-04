@@ -1,0 +1,32 @@
+<div class="space-y-4">
+  <div class="prose prose-sm max-w-none text-gray-900" [innerHTML]="question().questionBody | safeHtml"></div>
+
+  @if (question().attachments.length > 0) {
+    <div class="space-y-3">
+      @for (att of question().attachments; track att.filePathUrl) {
+        @if (att.fileType === 'image') {
+          <img
+            [src]="att.filePathUrl"
+            [alt]="att.altText || 'Question attachment'"
+            class="max-w-full rounded-lg border border-gray-200"
+          />
+        } @else if (att.fileType === 'audio') {
+          <audio controls class="w-full" [attr.aria-label]="att.altText || 'Audio attachment'">
+            <source [src]="att.filePathUrl" />
+          </audio>
+        }
+      }
+    </div>
+  }
+
+  <div>
+    <label [for]="textareaId" class="form-label">Your Answer</label>
+    <textarea
+      [id]="textareaId"
+      class="form-input min-h-[120px] resize-y"
+      [value]="answer()"
+      (input)="onInput($event)"
+      placeholder="Type your answer here..."
+    ></textarea>
+  </div>
+</div>

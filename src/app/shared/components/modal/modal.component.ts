@@ -6,7 +6,7 @@ import { Component, effect, input, output, signal, ElementRef } from '@angular/c
   template: `
     @if (isOpen()) {
       <div class="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-black/50 transition-opacity" (click)="close()" (keydown)="onKeydown($event)" />
+        <div class="fixed inset-0 bg-black/50 transition-opacity" (click)="close()" (keydown)="onKeydown($event)"></div>
         <div
           #dialogPanel
           class="relative bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto focus:outline-none"

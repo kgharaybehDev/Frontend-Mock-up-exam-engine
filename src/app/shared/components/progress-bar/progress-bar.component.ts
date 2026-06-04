@@ -11,7 +11,7 @@ import type { ColorVariant } from '../../types';
         [class]="barClass()"
         [style.width.%]="indeterminate() ? 100 : value()"
         [class.animate-progress-indeterminate]="indeterminate()"
-      />
+      ></div>
     </div>
   `,
   host: {
