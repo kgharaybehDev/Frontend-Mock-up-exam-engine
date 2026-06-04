@@ -33,14 +33,6 @@ export class InputFieldComponent implements ControlValueAccessor {
 
   readonly errorId = () => `${this.id()}-error`;
 
-  readonly inputClasses = () => {
-    const base = 'form-input';
-    const iconPad = this.leadingIcon() ? 'pl-10' : '';
-    const border = this.error() ? 'form-input-error' : '';
-    const state = this.disabled() ? 'bg-gray-100 cursor-not-allowed' : '';
-    return `${base} ${iconPad} ${border} ${state}`;
-  };
-
   onInput(event: Event) {
     const el = event.target as HTMLInputElement;
     this.value.set(el.value);
