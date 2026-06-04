@@ -8,6 +8,16 @@ export const roleGuard = (allowedRoles: string[]) => () => {
   const user = auth.currentUser();
 
   if (!user) {
+    if (auth.isAuthenticated()) {
+      auth.restoreUserFromToken();
+      const restored = auth.currentUser();
+      if (restored) {
+        const normalized = restored.role.toLowerCase();
+        if (allowedRoles.map((r) => r.toLowerCase()).includes(normalized)) {
+          return true;
+        }
+      }
+    }
     return router.parseUrl('/auth/login');
   }
 

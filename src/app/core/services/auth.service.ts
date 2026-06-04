@@ -75,6 +75,37 @@ export class AuthService {
     return this.refreshToken();
   }
 
+  syncFromStorage(): boolean {
+    const stored = localStorage.getItem(ACCESS_TOKEN_KEY);
+    if (stored && !this.accessToken()) {
+      this.accessToken.set(stored);
+      const storedRefresh = localStorage.getItem(REFRESH_TOKEN_KEY);
+      if (storedRefresh) this.refreshToken.set(storedRefresh);
+    }
+    const hasToken = !!this.accessToken();
+    if (hasToken && !this.currentUser()) {
+      this.loadUserFromToken();
+    }
+    return hasToken;
+  }
+
+  restoreUserFromToken(): boolean {
+    const token = this.accessToken();
+    if (!token) return false;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      this.currentUser.set({
+        userId: payload.sub || payload.userId || '',
+        email: payload.email || '',
+        firstName: payload.given_name || payload.name || '',
+        role: payload.role || 'candidate',
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   private loadUserFromToken() {
     const token = this.accessToken();
     if (!token) return;

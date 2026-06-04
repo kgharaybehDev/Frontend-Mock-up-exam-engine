@@ -10,5 +10,9 @@ export const authGuard = () => {
     return true;
   }
 
+  if (auth.syncFromStorage()) {
+    return true;
+  }
+
   return router.parseUrl('/auth/login');
 };

@@ -55,13 +55,12 @@ export class LoginComponent {
         this.toast.success('Welcome back!');
 
         const role = res.data.user.role.toLowerCase();
-        if (role === 'admin') {
-          this.router.navigate(['/admin/dashboard']);
-        } else if (role === 'expert') {
-          this.router.navigate(['/expert/dashboard']);
-        } else {
-          this.router.navigate(['/candidate/dashboard']);
-        }
+        const target = role === 'admin'
+          ? '/admin/dashboard'
+          : role === 'expert'
+            ? '/expert/dashboard'
+            : '/candidate/dashboard';
+        this.router.navigateByUrl(target);
       },
       error: (err) => {
         this.isLoading.set(false);
