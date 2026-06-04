@@ -6,43 +6,7 @@ import type { ControlValueAccessor } from '@angular/forms';
   selector: 'app-input-field',
   standalone: true,
   imports: [ReactiveFormsModule],
-  template: `
-    <div class="flex flex-col gap-1.5">
-      @if (label()) {
-        <label class="text-sm font-medium text-gray-700" [attr.for]="id()">
-          {{ label() }}
-          @if (required()) { <span class="text-red-500" aria-hidden="true">*</span> }
-        </label>
-      }
-      <div class="relative">
-        @if (leadingIcon()) {
-          <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-            <ng-content select="[leading-icon]" />
-          </span>
-        }
-        <input
-          [id]="id()"
-          [type]="type()"
-          [placeholder]="placeholder()"
-          [required]="required()"
-          [disabled]="disabled()"
-          [readonly]="readonly()"
-          [attr.aria-invalid]="!!error()"
-          [attr.aria-describedby]="errorId()"
-          [class]="inputClasses()"
-          [value]="value()"
-          (input)="onInput($event)"
-          (blur)="onTouched()"
-        />
-      </div>
-      @if (hint() && !error()) {
-        <p class="text-xs text-gray-500">{{ hint() }}</p>
-      }
-      @if (error()) {
-        <p class="text-xs text-red-600" [id]="errorId()" role="alert">{{ error() }}</p>
-      }
-    </div>
-  `,
+  templateUrl: './input-field.component.html',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -70,12 +34,12 @@ export class InputFieldComponent implements ControlValueAccessor {
   readonly errorId = () => `${this.id()}-error`;
 
   readonly inputClasses = () => {
-    const base = 'w-full rounded-lg border px-3 py-2.5 text-base min-h-[44px] transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-0';
+    const base = 'w-full px-4 py-2.5 bg-white border rounded-lg shadow-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all min-h-[44px]';
     const iconPad = this.leadingIcon() ? 'pl-10' : '';
     const border = this.error()
-      ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-      : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500';
-    const state = this.disabled() ? 'bg-gray-100 cursor-not-allowed' : 'bg-white';
+      ? 'border-red-500 focus:ring-red-500 focus:border-transparent'
+      : 'border-gray-300 focus:ring-blue-600 focus:border-transparent';
+    const state = this.disabled() ? 'bg-gray-100 cursor-not-allowed' : '';
     return `${base} ${iconPad} ${border} ${state}`;
   };
 
