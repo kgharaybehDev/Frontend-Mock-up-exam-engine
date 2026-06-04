@@ -34,11 +34,9 @@ export class InputFieldComponent implements ControlValueAccessor {
   readonly errorId = () => `${this.id()}-error`;
 
   readonly inputClasses = () => {
-    const base = 'w-full px-4 py-2.5 bg-white border rounded-lg shadow-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all min-h-[44px]';
+    const base = 'form-input';
     const iconPad = this.leadingIcon() ? 'pl-10' : '';
-    const border = this.error()
-      ? 'border-red-500 focus:ring-red-500 focus:border-transparent'
-      : 'border-gray-300 focus:ring-blue-600 focus:border-transparent';
+    const border = this.error() ? 'form-input-error' : '';
     const state = this.disabled() ? 'bg-gray-100 cursor-not-allowed' : '';
     return `${base} ${iconPad} ${border} ${state}`;
   };

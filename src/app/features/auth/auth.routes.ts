@@ -1,9 +1,10 @@
 import { Routes } from '@angular/router';
+import { AuthLayoutComponent } from '../../shared/layouts/auth-layout/auth-layout.component';
 
 export const authRoutes: Routes = [
   {
     path: '',
-    loadComponent: () => import('../../shared/layouts/auth-layout/auth-layout.component').then((c) => c.AuthLayoutComponent),
+    component: AuthLayoutComponent,
     children: [
       {
         path: 'login',
