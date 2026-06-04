@@ -56,3 +56,18 @@
 - Global tokens via CSS custom properties (see `frontend_design_plan.md` for color/corner/spacing tokens).
 - View-encapsulated styles via component `styleUrl` (linked files, not inline).
 - Use CSS Grid and Flexbox for layout; no heavy third-party CSS frameworks.
+
+## 11. CSS Class Management
+- NEVER use `[class]="..."` dynamic binding if it overrides existing classes on the element.
+- ALWAYS use static `class="..."` for base classes + `[class.name]="condition"` for dynamic toggles.
+- Example: `class="form-input" [class.form-input-error]="!!error()"` — never `[class]="inputClasses()"`.
+
+## 12. Accessibility — Unique Input IDs
+- EVERY input component must generate a unique ID using `crypto.randomUUID()` or a static counter.
+- The generated ID MUST be used to link `<label for="...">` with `<input id="...">`.
+- This ensures screen readers correctly associate labels with inputs at all times.
+
+## 13. LLM Context Awareness
+- BEFORE writing code for a new feature, REQUIRED to read `RULES.md` and `llms-full.txt`.
+- Explicitly state that RULES.md and llms-full.txt have been reviewed in the response.
+- These files define the project conventions, coding rules, and Angular 19 API surface that must be followed.
