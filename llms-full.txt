@@ -1,0 +1,5 @@
+### UI Development & Component Design Best Practices
+1. **Never Clobber Base Classes:** When dynamically applying styles (like error states), NEVER use `[class]="..."` if it overwrites base classes. ALWAYS use separate `class="base-classes"` and `[class.modifier]="condition"` to toggle modifiers safely.
+2. **Abstract to SCSS Layer:** All repetitive UI patterns (buttons, inputs, cards) must be abstracted into `@layer components` in `styles.scss` using `@apply`. Do not inline long strings of Tailwind classes in HTML.
+3. **Accessibility First:** Every form component must have a unique, generated ID bound to both the `<label>`'s `for` attribute and the `<input>`'s `id` attribute.
+4. **Strict Pre-work Checklist:** Before writing any code, search and read `llms-full.txt` to align with the current architecture and avoid repeating past mistakes.
