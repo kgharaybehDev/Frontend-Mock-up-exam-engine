@@ -154,6 +154,9 @@ export class ExamService {
     this.currentIndex.set(0);
     this.answers.set({});
     this.isSubmitting.set(false);
-    this.submitResult.set(null);
+  }
+
+  checkReport(attemptId: string) {
+    return this.http.get<ApiResponse<unknown>>(`${this.apiBase}/api/v1/reports/${attemptId}`);
   }
 }

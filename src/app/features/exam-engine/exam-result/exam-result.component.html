@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-  <app-card class="max-w-lg w-full text-center" [title]="examTitle()">
+  <app-card class="max-w-lg w-full text-center" [title]="examTitle()" [hasFooter]="true">
     <div class="py-6 space-y-6">
       @if (passed()) {
         <div class="mx-auto w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center" aria-hidden="true">
@@ -32,21 +32,34 @@
         <p class="text-gray-600">{{ message() }}</p>
       }
 
-      @if (reportUrl()) {
+      @if (reportStatus() === 'generating' && !reportReady()) {
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
+          <div class="flex items-center justify-center gap-2">
+            <div class="h-5 w-5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" aria-hidden="true"></div>
+            <span class="text-sm text-blue-700 font-medium">Generating your detailed report...</span>
+          </div>
+        </div>
+      }
+
+      @if (reportReady() && reportUrl()) {
         <a
           [href]="reportUrl()"
           target="_blank"
           class="btn btn-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
           rel="noopener noreferrer"
         >
-          View Full Report
+          View Detailed Report
         </a>
+      }
+
+      @if (reportError()) {
+        <p class="text-xs text-gray-400">Report generation encountered an error. Please contact support.</p>
       }
     </div>
 
     <div class="flex flex-col sm:flex-row gap-3" card-footer>
-      <a routerLink="/candidate/dashboard" class="btn btn-full">
-        Back to Dashboard
+      <a routerLink="/candidate/dashboard" app-button [fullWidth]="true">
+        Return to Dashboard
       </a>
     </div>
   </app-card>
