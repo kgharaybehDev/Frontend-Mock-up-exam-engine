@@ -3,13 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import type { ApiResponse } from '../models/api-response.model';
-import type { AttemptAttachmentDto, AttemptStartDto, AttemptResumeDto, AttemptSubmitResultDto, FinalAnswerSubmission } from '../models/attempt.model';
+import type { AttemptAttachmentDto, AttemptStartDto, AttemptResumeDto, AttemptSubmitResultDto, FinalAnswerSubmission, QuestionOptionDto } from '../models/attempt.model';
 import { API_BASE_URL } from '../tokens/api-url.token';
 
 export interface ExamSessionQuestion {
   attemptQuestionId: string;
   orderIndex: number;
   questionBody: string;
+  questionType: string;
+  options: QuestionOptionDto[];
   attachments: AttemptAttachmentDto[];
   savedAnswer: string;
   isFlagged: boolean;
@@ -78,6 +80,8 @@ export class ExamService {
       attemptQuestionId: q.attemptQuestionId,
       orderIndex: q.orderIndex,
       questionBody: q.questionBody,
+      questionType: q.questionType,
+      options: q.options ?? [],
       attachments: q.attachments,
       savedAnswer: 'savedAnswer' in q ? (q as any).savedAnswer ?? '' : '',
       isFlagged: 'isFlagged' in q ? (q as any).isFlagged ?? false : false,

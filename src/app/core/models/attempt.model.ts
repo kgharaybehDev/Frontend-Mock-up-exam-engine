@@ -9,10 +9,18 @@ export interface AttemptStartDto {
   questions: AttemptQuestionDto[];
 }
 
+export interface QuestionOptionDto {
+  optionLetter: string;
+  optionText: string;
+  displayOrder: number;
+}
+
 export interface AttemptQuestionDto {
   attemptQuestionId: string;
   orderIndex: number;
   questionBody: string;
+  questionType: string;
+  options: QuestionOptionDto[];
   attachments: AttemptAttachmentDto[];
 }
 
@@ -37,6 +45,8 @@ export interface ResumeQuestionDto {
   attemptQuestionId: string;
   orderIndex: number;
   questionBody: string;
+  questionType: string;
+  options: QuestionOptionDto[];
   attachments: AttemptAttachmentDto[];
   savedAnswer: string;
   isFlagged: boolean;

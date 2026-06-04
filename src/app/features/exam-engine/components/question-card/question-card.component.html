@@ -19,14 +19,39 @@
     </div>
   }
 
-  <div>
-    <label [for]="textareaId" class="form-label">Your Answer</label>
-    <textarea
-      [id]="textareaId"
-      class="form-input min-h-[120px] resize-y"
-      [value]="answer()"
-      (input)="onInput($event)"
-      placeholder="Type your answer here..."
-    ></textarea>
-  </div>
+  @if (isMcq()) {
+    <fieldset class="space-y-3">
+      <legend class="form-label">Select your answer</legend>
+      @for (opt of question().options; track opt.optionLetter) {
+        <label
+          class="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
+          [class]="answer() === opt.optionLetter ? 'border-blue-400 bg-blue-50' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'"
+        >
+          <input
+            type="radio"
+            [name]="'q-' + question().attemptQuestionId"
+            [value]="opt.optionLetter"
+            [checked]="answer() === opt.optionLetter"
+            class="mt-0.5 h-4 w-4 shrink-0 border-gray-300 text-blue-600 focus:ring-blue-500"
+            (change)="onRadioSelect(opt.optionLetter)"
+          />
+          <span class="text-sm text-gray-900">
+            <span class="font-medium">{{ opt.optionLetter }}.</span>
+            {{ opt.optionText }}
+          </span>
+        </label>
+      }
+    </fieldset>
+  } @else {
+    <div>
+      <label [for]="textareaId" class="form-label">Your Answer</label>
+      <textarea
+        [id]="textareaId"
+        class="form-input min-h-[120px] resize-y"
+        [value]="answer()"
+        (input)="onInput($event)"
+        placeholder="Type your answer here..."
+      ></textarea>
+    </div>
+  }
 </div>

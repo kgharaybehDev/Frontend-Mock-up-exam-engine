@@ -19,8 +19,16 @@ export class QuestionCardComponent {
 
   protected readonly textareaId = `${this.inputId}-textarea`;
 
+  protected readonly isMcq = () => this.question().questionType === 'MultipleChoice';
+
+  protected readonly isEssay = () => this.question().questionType !== 'MultipleChoice';
+
   onInput(event: Event) {
     const value = (event.target as HTMLTextAreaElement).value;
     this.answerChange.emit(value);
+  }
+
+  onRadioSelect(optionLetter: string) {
+    this.answerChange.emit(optionLetter);
   }
 }

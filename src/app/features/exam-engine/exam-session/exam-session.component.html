@@ -147,13 +147,14 @@
   <app-modal
     [open]="showSubmitModal()"
     title="Submit Exam?"
+    [hasFooter]="true"
     (dismiss)="showSubmitModal.set(false)"
   >
     <p class="text-gray-600">
       You have answered {{ answeredCount() }} of {{ totalQuestions() }} questions.
       Once submitted, you will not be able to change your answers.
     </p>
-    <div class="flex gap-3 justify-end mt-6" modal-footer>
+    <div class="flex gap-3 justify-end" modal-footer>
       <button type="button" app-button variant="outline" (click)="showSubmitModal.set(false)">Cancel</button>
       <button type="button" app-button color="success" [loading]="isSubmitting()" (click)="confirmSubmit()">
         Submit
@@ -164,12 +165,13 @@
   <app-modal
     [open]="showAbandonModal()"
     title="Abandon Exam?"
+    [hasFooter]="true"
     (dismiss)="showAbandonModal.set(false)"
   >
     <p class="text-gray-600">
       Are you sure you want to abandon this exam? Your progress will be lost and the exam will be marked as abandoned.
     </p>
-    <div class="flex gap-3 justify-end mt-6" modal-footer>
+    <div class="flex gap-3 justify-end" modal-footer>
       <button type="button" app-button variant="outline" (click)="showAbandonModal.set(false)">Cancel</button>
       <button type="button" app-button color="danger" [loading]="isSubmitting()" (click)="confirmAbandon()">
         Abandon
