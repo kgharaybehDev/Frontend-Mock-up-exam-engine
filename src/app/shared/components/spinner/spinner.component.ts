@@ -7,7 +7,12 @@ import type { ColorVariant, SizeVariant } from '../../types';
   template: `
     <svg
       class="animate-spin"
-      [class]="sizeClass()"
+      [class.h-4]="size() === 'sm'"
+      [class.w-4]="size() === 'sm'"
+      [class.h-6]="size() === 'md'"
+      [class.w-6]="size() === 'md'"
+      [class.h-10]="size() === 'lg'"
+      [class.w-10]="size() === 'lg'"
       [attr.aria-label]="ariaLabel()"
       role="status"
       viewBox="0 0 24 24"
@@ -19,29 +24,17 @@ import type { ColorVariant, SizeVariant } from '../../types';
     <span class="sr-only">{{ ariaLabel() }}</span>
   `,
   host: {
-    '[class]': 'colorClass()',
+    '[class.text-blue-600]': "color() === 'primary'",
+    '[class.text-violet-600]': "color() === 'secondary'",
+    '[class.text-emerald-600]': "color() === 'success'",
+    '[class.text-amber-600]': "color() === 'warning'",
+    '[class.text-red-600]': "color() === 'danger'",
+    '[class.text-cyan-600]': "color() === 'info'",
+    '[class.text-gray-600]': "color() === 'neutral'",
   },
 })
 export class SpinnerComponent {
   readonly size = input<SizeVariant>('md');
   readonly color = input<ColorVariant>('primary');
   readonly ariaLabel = input('Loading');
-
-  readonly sizeClass = () => {
-    const sizes: Record<SizeVariant, string> = { sm: 'h-4 w-4', md: 'h-6 w-6', lg: 'h-10 w-10' };
-    return sizes[this.size()];
-  };
-
-  readonly colorClass = () => {
-    const colors: Record<ColorVariant, string> = {
-      primary: 'text-blue-600',
-      secondary: 'text-violet-600',
-      success: 'text-emerald-600',
-      warning: 'text-amber-600',
-      danger: 'text-red-600',
-      info: 'text-cyan-600',
-      neutral: 'text-gray-600',
-    };
-    return colors[this.color()];
-  };
 }

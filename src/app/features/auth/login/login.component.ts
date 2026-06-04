@@ -31,10 +31,12 @@ export class LoginComponent {
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
+    rememberMe: [false],
   });
 
   readonly emailControl = this.form.controls.email;
   readonly passwordControl = this.form.controls.password;
+  readonly rememberMeControl = this.form.controls.rememberMe;
 
   onSubmit() {
     if (this.form.invalid) {

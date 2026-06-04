@@ -1,0 +1,35 @@
+:host(.btn) {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: .5rem; font-weight: 500; border-radius: .5rem;
+  transition: all .15s ease; cursor: pointer; outline: none;
+  &:focus-visible { box-shadow: 0 0 0 2px var(--btn-ring,transparent),0 0 0 4px #fff; }
+  &:disabled,&[aria-busy="true"] { opacity: .5; cursor: not-allowed; pointer-events: none; }
+}
+:host(.btn-sm) { padding: .375rem .75rem; font-size: .875rem; min-height: 36px; }
+:host(.btn-lg) { padding: .75rem 1.5rem; font-size: 1.125rem; min-height: 52px; }
+:host(:not(.btn-sm):not(.btn-lg)) { padding: .625rem 1rem; font-size: 1rem; min-height: 44px; }
+:host(.btn-full) { width: 100%; }
+
+:host([data-variant="solid"]) {
+  background: var(--btn-bg); color: #fff; --btn-ring: var(--btn-ring-c);
+  &:hover { background: var(--btn-bg-h); }
+  &:active { background: var(--btn-bg-a); }
+}
+:host([data-variant="outline"]) {
+  background: transparent; border: 2px solid var(--btn-bg); color: var(--btn-bg); --btn-ring: var(--btn-ring-c);
+  &:hover { background: var(--btn-bg-ho); }
+  &:active { background: var(--btn-bg-ao); }
+}
+:host([data-variant="ghost"]) {
+  background: transparent; color: var(--btn-bg); --btn-ring: var(--btn-ring-c);
+  &:hover { background: var(--btn-bg-ho); }
+  &:active { background: var(--btn-bg-ao); }
+}
+
+:host([data-color="primary"])   { --btn-bg: #2563eb; --btn-bg-h: #1d4ed8; --btn-bg-a: #1e40af; --btn-ring-c: #3b82f6; --btn-bg-ho: #eff6ff; --btn-bg-ao: #dbeafe; }
+:host([data-color="secondary"]) { --btn-bg: #7c3aed; --btn-bg-h: #6d28d9; --btn-bg-a: #5b21b6; --btn-ring-c: #8b5cf6; --btn-bg-ho: #f5f3ff; --btn-bg-ao: #ede9fe; }
+:host([data-color="success"])   { --btn-bg: #059669; --btn-bg-h: #047857; --btn-bg-a: #065f46; --btn-ring-c: #10b981; --btn-bg-ho: #ecfdf5; --btn-bg-ao: #d1fae5; }
+:host([data-color="warning"])   { --btn-bg: #f59e0b; --btn-bg-h: #d97706; --btn-bg-a: #b45309; --btn-ring-c: #fbbf24; --btn-bg-ho: #fffbeb; --btn-bg-ao: #fef3c7; }
+:host([data-color="danger"])    { --btn-bg: #dc2626; --btn-bg-h: #b91c1c; --btn-bg-a: #991b1b; --btn-ring-c: #ef4444; --btn-bg-ho: #fef2f2; --btn-bg-ao: #fee2e2; }
+:host([data-color="info"])      { --btn-bg: #0891b2; --btn-bg-h: #0e7490; --btn-bg-a: #155e75; --btn-ring-c: #06b6d4; --btn-bg-ho: #ecfeff; --btn-bg-ao: #cffafe; }
+:host([data-color="neutral"])   { --btn-bg: #4b5563; --btn-bg-h: #374151; --btn-bg-a: #1f2937; --btn-ring-c: #6b7280; --btn-bg-ho: #f9fafb; --btn-bg-ao: #f3f4f6; }

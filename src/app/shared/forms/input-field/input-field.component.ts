@@ -1,4 +1,4 @@
-import { Component, effect, forwardRef, input, signal } from '@angular/core';
+import { Component, computed, forwardRef, input, signal } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
 
@@ -22,6 +22,7 @@ export class InputFieldComponent implements ControlValueAccessor {
   readonly label = input('');
   readonly type = input('text');
   readonly placeholder = input('');
+  readonly autocomplete = input<string>('');
   readonly required = input(false);
   readonly disabled = input(false);
   readonly readonly = input(false);
@@ -30,17 +31,12 @@ export class InputFieldComponent implements ControlValueAccessor {
   readonly leadingIcon = input(false);
 
   protected readonly value = signal('');
-  protected readonly isDisabled = signal(false);
+  private readonly formDisabled = signal(false);
+  protected readonly isDisabled = computed(() => this.disabled() || this.formDisabled());
   protected onChange: (v: string) => void = () => {};
   protected onTouched: () => void = () => {};
 
-  readonly errorId = () => `${this.id()}-error`;
-
-  constructor() {
-    effect(() => {
-      this.isDisabled.set(this.disabled());
-    });
-  }
+  readonly errorId = computed(() => `${this.id()}-error`);
 
   onInput(event: Event) {
     const el = event.target as HTMLInputElement;
@@ -51,5 +47,5 @@ export class InputFieldComponent implements ControlValueAccessor {
   writeValue(val: string) { this.value.set(val ?? ''); }
   registerOnChange(fn: (v: string) => void) { this.onChange = fn; }
   registerOnTouched(fn: () => void) { this.onTouched = fn; }
-  setDisabledState(disabled: boolean) { this.isDisabled.set(disabled); }
+  setDisabledState(disabled: boolean) { this.formDisabled.set(disabled); }
 }

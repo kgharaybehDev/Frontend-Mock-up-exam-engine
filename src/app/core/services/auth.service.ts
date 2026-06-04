@@ -1,8 +1,8 @@
-import { computed, effect, Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { throwError } from 'rxjs';
 import type { ApiResponse } from '../models/api-response.model';
 import type { ForgotPasswordRequestDto, LoginRequestDto, LoginResponseDto, RefreshTokenRequestDto, RegisterRequestDto, RegisterResponseDto } from '../models/auth.model';
 import { API_BASE_URL } from '../tokens/api-url.token';
@@ -41,7 +41,7 @@ export class AuthService {
     const token = this.refreshToken();
     if (!token) {
       this.logout();
-      throw new Error('No refresh token available');
+      return throwError(() => new Error('No refresh token available'));
     }
     const payload: RefreshTokenRequestDto = { refreshToken: token };
     return this.http.post<ApiResponse<LoginResponseDto>>(`${this.authApi}/refresh`, payload);
@@ -76,6 +76,18 @@ export class AuthService {
   }
 
   private loadUserFromToken() {
-
+    const token = this.accessToken();
+    if (!token) return;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      this.currentUser.set({
+        userId: payload.sub || payload.userId || '',
+        email: payload.email || '',
+        firstName: payload.given_name || payload.name || '',
+        role: payload.role || 'candidate',
+      });
+    } catch {
+      this.logout();
+    }
   }
 }

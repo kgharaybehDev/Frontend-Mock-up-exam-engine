@@ -69,9 +69,6 @@ export class RegisterComponent {
       firstName: nameParts[0] || '',
       lastName: nameParts.slice(1).join(' ') || '',
       roleId: 3,
-      specialization: '',
-      certificationTarget: '',
-      country: '',
     };
 
     this.authService.register(payload).subscribe({

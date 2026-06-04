@@ -24,9 +24,9 @@ export interface RegisterRequestDto {
   firstName: string;
   lastName: string;
   roleId: number;
-  specialization: string;
-  certificationTarget: string;
-  country: string;
+  specialization?: string;
+  certificationTarget?: string;
+  country?: string;
 }
 
 export interface RegisterResponseDto {

@@ -18,6 +18,7 @@
       label="Full Name"
       type="text"
       placeholder="John Doe"
+      autocomplete="name"
       [required]="true"
       [error]="nameControl.touched ? (nameControl.errors ? ' ' : '') : ''"
     >
@@ -31,6 +32,7 @@
       label="Email"
       type="email"
       placeholder="you@example.com"
+      autocomplete="email"
       [required]="true"
       [error]="emailControl.touched ? (emailControl.errors ? ' ' : '') : ''"
     >
@@ -44,6 +46,7 @@
       label="Password"
       type="password"
       placeholder="Min. 8 characters"
+      autocomplete="new-password"
       [required]="true"
       [error]="passwordControl.touched ? (passwordControl.errors ? ' ' : '') : ''"
     >
@@ -57,6 +60,7 @@
       label="Confirm Password"
       type="password"
       placeholder="Repeat your password"
+      autocomplete="new-password"
       [required]="true"
       [error]="confirmPasswordControl.touched && confirmPasswordControl.errors ? ' ' : ''"
     >
@@ -80,15 +84,15 @@
     </button>
   </form>
 
-  <div class="flex items-center gap-3 my-6">
-    <hr class="flex-1 border-gray-200" />
+  <div class="flex items-center gap-3 my-6" role="separator" aria-label="or">
+    <hr class="flex-1 border-gray-200" aria-hidden="true" />
     <span class="text-sm text-gray-500">Or</span>
-    <hr class="flex-1 border-gray-200" />
+    <hr class="flex-1 border-gray-200" aria-hidden="true" />
   </div>
 
   <div class="space-y-3">
-    <button app-button variant="outline" color="neutral" [fullWidth]="true">
-      <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none">
+    <button app-button variant="outline" color="neutral" [fullWidth]="true" aria-label="Sign up with Google">
+      <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
         <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
@@ -97,8 +101,8 @@
       Sign up with Google
     </button>
 
-    <button app-button variant="outline" color="neutral" [fullWidth]="true">
-      <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+    <button app-button variant="outline" color="neutral" [fullWidth]="true" aria-label="Sign up with Apple">
+      <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.5 9.05 7.23c1.35.05 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.61 5.98.52 7.13-.62 1.33-1.42 2.65-2.57 3.16zM12.03 7.12c-.15-2.23 1.66-4.17 3.86-4.12.2 1.89-1.08 3.88-3.09 3.99-.07.03-.3.06-.56.06l-.21.07z"/>
       </svg>
       Sign up with Apple
