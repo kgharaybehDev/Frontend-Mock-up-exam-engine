@@ -202,4 +202,8 @@ export class ExamReportComponent implements OnInit {
   protected passFailColor(passed: boolean): string {
     return passed ? 'text-emerald-700' : 'text-red-700';
   }
+
+  protected cleanQuestionBody(body: string): string {
+    return body.replace(/<ol[^>]*>[\s\S]*?<\/ol>/gi, '').replace(/<li[^>]*>[\s\S]*?<\/li>/gi, '');
+  }
 }

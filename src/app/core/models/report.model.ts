@@ -6,7 +6,7 @@ export interface QuestionOptionDto {
 
 export interface TopicBreakdownDto {
   topicName: string;
-  scorePercentage: number;
+  scorePercent: number;
   totalQuestions: number;
   correctCount: number;
 }
