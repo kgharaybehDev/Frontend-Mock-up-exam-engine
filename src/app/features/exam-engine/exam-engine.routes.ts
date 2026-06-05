@@ -10,6 +10,10 @@ export const examEngineRoutes: Routes = [
     loadComponent: () => import('./exam-result/exam-result.component').then((c) => c.ExamResultComponent),
   },
   {
+    path: 'report/:id',
+    loadComponent: () => import('./exam-report/exam-report.component').then((c) => c.ExamReportComponent),
+  },
+  {
     path: '**',
     redirectTo: '/candidate/dashboard',
   },

@@ -41,12 +41,10 @@
         </div>
       }
 
-      @if (reportReady() && reportUrl()) {
+      @if (reportReady()) {
         <a
-          [href]="reportUrl()"
-          target="_blank"
+          [routerLink]="['/exam/report', attemptId()]"
           class="btn btn-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
-          rel="noopener noreferrer"
         >
           View Detailed Report
         </a>

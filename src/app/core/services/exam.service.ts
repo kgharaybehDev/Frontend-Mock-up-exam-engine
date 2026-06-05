@@ -95,7 +95,7 @@ export class ExamService {
       examId: data.examId,
       examTitle: data.examTitle,
       navigationType: data.navigationType,
-      remainingSeconds: data.durationMinutes * 60 + data.durationSeconds,
+      remainingSeconds: Math.max(data.durationMinutes * 60, data.durationSeconds),
       status: 'in-progress',
       questions,
     });

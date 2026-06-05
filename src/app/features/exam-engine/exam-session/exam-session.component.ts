@@ -189,20 +189,10 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
   confirmAbandon() {
     this.showAbandonModal.set(false);
-    this.isSubmitting.set(true);
     this.stopTimer();
-
-    this.examService.abandonExam(this.attemptId).subscribe({
-      next: () => {
-        this.examService.clearSession();
-        this.router.navigate(['/candidate/dashboard']);
-      },
-      error: () => {
-        this.toast.error('Failed to abandon exam. Please try again.');
-        this.isSubmitting.set(false);
-        this.startTimer();
-      },
-    });
+    this.examService.clearSession();
+    this.examService.abandonExam(this.attemptId).subscribe();
+    this.router.navigate(['/candidate/dashboard']);
   }
 
   private onTimeUp() {
