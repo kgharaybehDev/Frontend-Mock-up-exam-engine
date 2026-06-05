@@ -1,5 +1,5 @@
 import { Component, inject, computed, signal, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ExamService } from '../../../core/services/exam.service';
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
@@ -11,6 +11,7 @@ import { ButtonComponent } from '../../../shared/components/button/button.compon
   templateUrl: './exam-result.component.html',
 })
 export class ExamResultComponent implements OnInit, OnDestroy {
+  private readonly router = inject(Router);
   private readonly examService = inject(ExamService);
 
   readonly result = this.examService.submitResult;
@@ -26,20 +27,22 @@ export class ExamResultComponent implements OnInit, OnDestroy {
   readonly message = computed(() => this.result()?.message ?? '');
   readonly examTitle = computed(() => this.session()?.examTitle ?? 'Exam');
 
-  readonly reportReady = signal(false);
   readonly reportError = signal(false);
 
   private pollTimer: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit() {
-    if (this.reportStatus() === 'generating' && this.attemptId()) {
+    if (this.attemptId()) {
+      if (this.reportStatus() !== 'generating') {
+        this.router.navigate(['/exam/report', this.attemptId()]);
+        return;
+      }
       this.pollTimer = setInterval(() => {
         this.examService.checkReport(this.attemptId()).subscribe({
           next: (res) => {
             if (res.success) {
-              this.reportReady.set(true);
-              this.reportError.set(false);
               this.stopPolling();
+              this.router.navigate(['/exam/report', this.attemptId()]);
             }
           },
           error: () => {

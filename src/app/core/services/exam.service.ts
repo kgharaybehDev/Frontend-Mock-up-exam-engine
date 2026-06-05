@@ -4,6 +4,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import type { ApiResponse } from '../models/api-response.model';
 import type { AttemptAttachmentDto, AttemptStartDto, AttemptResumeDto, AttemptSubmitResultDto, FinalAnswerSubmission, QuestionOptionDto } from '../models/attempt.model';
+import type { ExamReportDto } from '../models/report.model';
 import { API_BASE_URL } from '../tokens/api-url.token';
 
 export interface ExamSessionQuestion {
@@ -158,5 +159,9 @@ export class ExamService {
 
   checkReport(attemptId: string) {
     return this.http.get<ApiResponse<unknown>>(`${this.apiBase}/api/v1/reports/${attemptId}`);
+  }
+
+  getExamReport(attemptId: string) {
+    return this.http.get<ApiResponse<ExamReportDto>>(`${this.apiBase}/api/v1/reports/${attemptId}`);
   }
 }
