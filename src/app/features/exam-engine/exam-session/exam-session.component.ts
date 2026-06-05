@@ -64,6 +64,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     if (session && session.attemptId === attemptId) {
       this.isLoading.set(false);
       this.startTimer();
+      this.recordEntry();
       return;
     }
 
@@ -72,6 +73,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
         if (res.success && res.data) {
           this.examService.loadSessionFromResume(res.data);
           this.startTimer();
+          this.recordEntry();
         } else {
           this.errorMessage.set(res.error || 'Failed to load attempt.');
         }
@@ -109,21 +111,41 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     }
   }
 
+  private recordExit() {
+    const q = this.currentQuestion();
+    if (q) {
+      this.examService.recordQuestionExit(q.attemptQuestionId);
+    }
+  }
+
+  private recordEntry() {
+    const q = this.currentQuestion();
+    if (q) {
+      this.examService.recordQuestionEntry(q.attemptQuestionId);
+    }
+  }
+
   navigateTo(index: number) {
     if (index >= 0 && index < this.totalQuestions()) {
+      this.recordExit();
       this.examService.currentIndex.set(index);
+      this.recordEntry();
     }
   }
 
   goNext() {
     if (!this.isLastQuestion()) {
+      this.recordExit();
       this.examService.currentIndex.update((i) => i + 1);
+      this.recordEntry();
     }
   }
 
   goPrev() {
     if (!this.isFirstQuestion()) {
+      this.recordExit();
       this.examService.currentIndex.update((i) => i - 1);
+      this.recordEntry();
     }
   }
 
@@ -162,9 +184,11 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     this.isSubmitting.set(true);
     this.stopTimer();
 
+    this.examService.flushAllQuestionTimes();
     const finalAnswers = this.questions().map((q) => ({
       attemptQuestionId: q.attemptQuestionId,
       answerText: this.answers()[q.attemptQuestionId] || '',
+      timeSpentSeconds: this.examService.getQuestionTime(q.attemptQuestionId),
     }));
 
     this.examService.finishExam(this.attemptId, finalAnswers).subscribe({

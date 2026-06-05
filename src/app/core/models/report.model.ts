@@ -6,7 +6,7 @@ export interface QuestionOptionDto {
 
 export interface TopicBreakdownDto {
   topicName: string;
-  score: number;
+  scorePercentage: number;
   totalQuestions: number;
   correctCount: number;
 }
@@ -37,7 +37,30 @@ export interface ExamReportDto {
   maxTimeSeconds: number;
   avgTimeSeconds: number;
   totalFlaggedCount: number;
+  totalQuestions: number;
   recommendations: string;
   topicBreakdowns: TopicBreakdownDto[];
-  questionDetails: QuestionDetailDto[];
+}
+
+export interface QuestionDetailDto {
+  attemptQuestionId: string;
+  orderIndex: number;
+  questionBody: string;
+  questionType: string;
+  options: QuestionOptionDto[];
+  yourAnswer: string;
+  correctAnswer: string;
+  timeSpentSeconds: number;
+  isFlagged: boolean;
+  isCorrect: boolean;
+  topicName: string;
+  explanation: string;
+}
+
+export interface QuestionPageDto {
+  items: QuestionDetailDto[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
 }

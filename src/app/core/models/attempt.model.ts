@@ -67,6 +67,7 @@ export interface SubmitFinalDto {
 export interface FinalAnswerSubmission {
   attemptQuestionId: string;
   answerText: string;
+  timeSpentSeconds: number;
 }
 
 export interface AttemptSubmitResultDto {

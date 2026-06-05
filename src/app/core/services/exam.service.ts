@@ -4,7 +4,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import type { ApiResponse } from '../models/api-response.model';
 import type { AttemptAttachmentDto, AttemptStartDto, AttemptResumeDto, AttemptSubmitResultDto, FinalAnswerSubmission, QuestionOptionDto } from '../models/attempt.model';
-import type { ExamReportDto } from '../models/report.model';
+import type { ExamReportDto, QuestionPageDto } from '../models/report.model';
 import { API_BASE_URL } from '../tokens/api-url.token';
 
 export interface ExamSessionQuestion {
@@ -42,6 +42,9 @@ export class ExamService {
   readonly answers = signal<Record<string, string>>({});
   readonly isSubmitting = signal(false);
   readonly submitResult = signal<AttemptSubmitResultDto | null>(null);
+
+  readonly questionTimeSpent = signal<Record<string, number>>({});
+  private questionEntryTimes: Record<string, number> = {};
 
   readonly questions = computed(() => this.session()?.questions ?? []);
   readonly currentQuestion = computed(() => this.questions()[this.currentIndex()] ?? null);
@@ -110,6 +113,8 @@ export class ExamService {
     this.answers.set(answers);
     this.isSubmitting.set(false);
     this.submitResult.set(null);
+    this.questionTimeSpent.set({});
+    this.questionEntryTimes = {};
   }
 
   loadSessionFromResume(data: AttemptResumeDto) {
@@ -133,6 +138,8 @@ export class ExamService {
     this.answers.set(answers);
     this.isSubmitting.set(false);
     this.submitResult.set(null);
+    this.questionTimeSpent.set({});
+    this.questionEntryTimes = {};
   }
 
   setAnswer(attemptQuestionId: string, answer: string) {
@@ -155,6 +162,8 @@ export class ExamService {
     this.currentIndex.set(0);
     this.answers.set({});
     this.isSubmitting.set(false);
+    this.questionTimeSpent.set({});
+    this.questionEntryTimes = {};
   }
 
   checkReport(attemptId: string) {
@@ -163,5 +172,43 @@ export class ExamService {
 
   getExamReport(attemptId: string) {
     return this.http.get<ApiResponse<ExamReportDto>>(`${this.apiBase}/api/v1/reports/${attemptId}`);
+  }
+
+  getPaginatedQuestions(attemptId: string, page: number, pageSize: number, status?: string) {
+    const params: Record<string, string | number> = { page, pageSize };
+    if (status) params['status'] = status;
+    return this.http.get<ApiResponse<QuestionPageDto>>(`${this.apiBase}/api/v1/reports/${attemptId}/questions`, { params: params as any });
+  }
+
+  recordQuestionEntry(attemptQuestionId: string) {
+    this.questionEntryTimes[attemptQuestionId] = Date.now();
+  }
+
+  recordQuestionExit(attemptQuestionId: string) {
+    const entered = this.questionEntryTimes[attemptQuestionId];
+    if (entered) {
+      const elapsed = Math.round((Date.now() - entered) / 1000);
+      this.questionTimeSpent.update((t) => ({
+        ...t,
+        [attemptQuestionId]: (t[attemptQuestionId] ?? 0) + elapsed,
+      }));
+    }
+    delete this.questionEntryTimes[attemptQuestionId];
+  }
+
+  flushAllQuestionTimes() {
+    const now = Date.now();
+    for (const [qId, entered] of Object.entries(this.questionEntryTimes)) {
+      const elapsed = Math.round((now - entered) / 1000);
+      this.questionTimeSpent.update((t) => ({
+        ...t,
+        [qId]: (t[qId] ?? 0) + elapsed,
+      }));
+    }
+    this.questionEntryTimes = {};
+  }
+
+  getQuestionTime(attemptQuestionId: string): number {
+    return this.questionTimeSpent()[attemptQuestionId] ?? 0;
   }
 }
