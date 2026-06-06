@@ -108,6 +108,7 @@ export interface TestBankDto {
   certificationType: string;
   description: string;
   createdBy: string;
+  isActive: boolean;
 }
 
 export interface TopicDto {
@@ -116,4 +117,5 @@ export interface TopicDto {
   name: string;
   description: string;
   totalQuestions: number;
+  isActive: boolean;
 }
