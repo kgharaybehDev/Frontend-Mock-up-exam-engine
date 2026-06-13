@@ -1,16 +1,41 @@
-<nav aria-label="Question navigation" class="space-y-2">
+<nav aria-label="Question navigation" class="space-y-3">
   <p class="text-sm font-medium text-gray-700">Question Navigator</p>
-  <div class="grid grid-cols-5 gap-2.5">
+  <div class="grid grid-cols-5 gap-2">
     @for (item of navItems(); track item.index) {
       <button
         type="button"
-        [class]="btnClass(item.status)"
-        [attr.aria-label]="'Go to question ' + (item.index + 1) + ' (' + (item.status | questionStatus) + ')'"
+        [class]="btnClass(item)"
+        [attr.aria-label]="'Go to question ' + (item.index + 1) + ' (' + (item.style | questionStatus) + ')'"
         [attr.aria-current]="item.isCurrent ? 'true' : null"
         (click)="navigateTo(item.index)"
       >
         {{ item.index + 1 }}
+        @if (item.isFlagged) {
+          <svg class="absolute -top-1 -right-1 h-3.5 w-3.5 text-red-600 drop-shadow-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M3 14V2.5A1.5 1.5 0 014.5 1h2.6a1.5 1.5 0 011.2.6l.7.9H13a1 1 0 011 1v7a1 1 0 01-1 1h-4.2a1.5 1.5 0 01-1.2-.6l-.7-.9H4v4a1 1 0 11-2 0z"/>
+          </svg>
+        }
       </button>
     }
+  </div>
+  <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-1 text-xs text-gray-500">
+    <span class="inline-flex items-center gap-1.5">
+      <span class="w-3 h-3 rounded-sm bg-emerald-100 border border-emerald-300" aria-hidden="true"></span>
+      Answered / Correct
+    </span>
+    <span class="inline-flex items-center gap-1.5">
+      <span class="w-3 h-3 rounded-sm bg-red-50 border border-red-300" aria-hidden="true"></span>
+      Incorrect
+    </span>
+    <span class="inline-flex items-center gap-1.5">
+      <span class="w-3 h-3 rounded-sm bg-gray-100 border border-gray-200" aria-hidden="true"></span>
+      Unanswered
+    </span>
+    <span class="inline-flex items-center gap-1.5">
+      <svg class="h-3.5 w-3.5 text-red-600" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+        <path d="M3 14V2.5A1.5 1.5 0 014.5 1h2.6a1.5 1.5 0 011.2.6l.7.9H13a1 1 0 011 1v7a1 1 0 01-1 1h-4.2a1.5 1.5 0 01-1.2-.6l-.7-.9H4v4a1 1 0 11-2 0z"/>
+      </svg>
+      Flagged
+    </span>
   </div>
 </nav>

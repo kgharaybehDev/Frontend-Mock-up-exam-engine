@@ -33,7 +33,7 @@ import type { AdminQuestionListItemDto } from '../../../core/models/admin.model'
                       <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500 shrink-0 mt-0.5">Inactive</span>
                     }
                   </div>
-                  @if (q.options?.length) {
+                  @if (q.options.length) {
                     <div class="space-y-1">
                       @for (opt of q.options; track opt.optionLetter) {
                         <div class="text-xs min-w-0 break-all" [class.text-green-700]="opt.isCorrect" [class.font-semibold]="opt.isCorrect" [class.text-gray-500]="!opt.isCorrect">

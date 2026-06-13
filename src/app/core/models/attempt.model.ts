@@ -56,6 +56,15 @@ export interface AutosaveRequestDto {
   answerText: string;
 }
 
+export interface BulkAutosaveItemDto {
+  attemptQuestionId: string;
+  answerText: string;
+}
+
+export interface BulkAutosaveRequestDto {
+  answers: BulkAutosaveItemDto[];
+}
+
 export interface FlagRequestDto {
   isFlagged: boolean;
 }

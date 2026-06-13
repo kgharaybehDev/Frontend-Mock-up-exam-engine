@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-export type QuestionStatus = 'unanswered' | 'answered' | 'flagged' | 'reviewed' | 'current';
+export type QuestionStatus = 'unanswered' | 'answered' | 'flagged' | 'reviewed' | 'current' | 'correct' | 'incorrect';
 
 @Pipe({ name: 'questionStatus', standalone: true })
 export class QuestionStatusPipe implements PipeTransform {
@@ -11,6 +11,8 @@ export class QuestionStatusPipe implements PipeTransform {
       flagged: 'Flagged for Review',
       reviewed: 'Reviewed',
       current: 'Current Question',
+      correct: 'Correct',
+      incorrect: 'Incorrect',
     };
     return labels[value] || value;
   }

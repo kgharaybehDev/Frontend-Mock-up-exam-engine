@@ -1,0 +1,66 @@
+{
+  "title": "ProExam Simulator - Frontend Conversation History (Compacted)",
+  "original_turns": 97,
+  "phases": [
+    {
+      "phase": "0-1: Planning & Scaffolding",
+      "turns": [95, 96, 97],
+      "summary": "Established project vision (ProExam Simulator - medical license exams). Created RULES.md (Angular 19 zoneless, signals, standalone, @control flow), Angular_PROJECT_MAP.md (folder structure), plan.md (execution phases), and frontend_design_plan.md (UX blueprint). Decisions: Tailwind CSS, custom components, JWT auth, i18n Arabic/English, signal-based state."
+    },
+    {
+      "phase": "2: Shared UI Library",
+      "turns": [91, 92, 93],
+      "summary": "Built AuthLayoutComponent, InputFieldComponent, ButtonComponent, FormErrorsComponent with Tailwind theming, accessibility (unique IDs via randomUUID), and `@layer components` SCSS abstraction. Fixed: `[class]` clobbering bug → used `[class.name]=\"cond\"` syntax. Committed shared library."
+    },
+    {
+      "phase": "3: Authentication Module",
+      "turns": [77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90],
+      "summary": "Built Login, Register, Forgot Password pages with split-screen AuthLayout. Integrated AuthService, interceptors (auth, error, loading), JWT localStorage persistence. Fixed CORS (backend Program.cs), fixed input-field disabled signal error, abstracted Tailwind to SCSS layers. Updated RULES.md/llms-full.txt with UI best practices. Added role-based routing guards."
+    },
+    {
+      "phase": "4: Exam Engine",
+      "turns": [73, 74, 75, 76],
+      "summary": "Implemented exam lifecycle: POST /start → GET /attempt/{id} → PUT answer/flag → POST submit. Dynamic MCQ rendering (options array, radio buttons vs textarea for Essay). Timer component, Question Navigator (numbered grid), modals for Submit/Abandon. Fixed: timer doubling bug, abandon binding, 404 on report route. Decoupled view from data — no hardcoding."
+    },
+    {
+      "phase": "5: Candidate Dashboard",
+      "turns": [62, 64, 65, 69, 70, 71, 72],
+      "summary": "DashboardLayout (sidebar + topbar), DashboardCardComponent for stats, Recent Activity table, Upcoming Exams widget. Skeleton loaders, empty state CTA. Integrated ExamService/DashboardService. Fixed critical auth redirect loop: authGuard not detecting token after login → added syncFromStorage() + restoreUserFromToken() in AuthService, fixed RoleGuard signal state self-healing, TSConfig rootDir warning resolved."
+    },
+    {
+      "phase": "6: Exam Results & Reports",
+      "turns": [42, 44, 45, 47, 49, 53, 54, 55],
+      "summary": "ExamResultComponent with score binding, totalTimeSeconds formatting, report generation spinner, navigation. ExamReportComponent with paginated questions, filter tabs (All/Incorrect/Flagged), Question Navigator sidebar (color-coded), topic performance bars, explanation boxes, option highlighting (green correct / red incorrect). Fixed: scorePercent field name, time tracking, options duplication."
+    },
+    {
+      "phase": "7: Admin Panel & Question Builder",
+      "turns": [20, 22, 23, 24, 25, 26, 27, 28, 30, 33, 34, 35, 37, 40],
+      "summary": "Admin API wiring (PATCH toggle endpoints, paginated responses). Test Banks/Topics/Questions CRUD with FormArray for dynamic options. Rich text editor integration. Fixed: JWT claim mapping (Microsoft XMLSOAP URIs for sub/role/email/givenname), inactive record visibility (grayed rows + opacity-60), text overflow (word-break break-all + min-width:0), paginated response iteration error (response.items)."
+    },
+    {
+      "phase": "8: DB Seeding & Final Alignment",
+      "turns": [60],
+      "summary": "Database seeder for development: default candidate account (kgharaybehdev@gmail.com), 2-3 test banks with 5-10 questions each, multiple choice/true-false types, exam definitions with durations/pass marks. Environment-guarded (IsDevelopment())."
+    }
+  ],
+  "key_technical_decisions": [
+    "Angular 19 zoneless + signals + standalone components",
+    "Tailwind CSS custom components (no Material UI except complex tables)",
+    "JWT with refresh tokens, localStorage persistence",
+    "Arabic/English i18n support",
+    "Split-screen auth layout, sidebar dashboard layout",
+    "Strict: NO inline templates, NO *ngIf/*ngFor, NO [class] clobbering",
+    "Accessibility: unique IDs via crypto.randomUUID(), WCAG AA"
+  ],
+  "critical_bugs_fixed": [
+    "Auth redirect loop after login (signal timing vs router guard)",
+    "JWT claim mapping for Microsoft WS-Federation XMLSOAP URIs",
+    "Timer doubling (durationMinutes multiplied twice)",
+    "Text overflow in flex layouts (min-width:0 + word-break: break-all)",
+    "Paginated API response iteration (response.items vs response.data)",
+    "CORS OPTIONS preflight (405)",
+    "Input field disabled signal error",
+    "Class clobbering with [class]=\"...\"",
+    "ScorePercent vs scorePercentage field name mismatch"
+  ]
+}

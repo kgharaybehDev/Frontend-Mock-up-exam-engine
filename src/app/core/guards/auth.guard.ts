@@ -12,13 +12,9 @@ export const authGuard = () => {
   const stored = localStorage.getItem(ACCESS_TOKEN_KEY);
   const syncResult = auth.syncFromStorage();
 
-  console.log(`[Auth Debug] [${new Date().toISOString()}] AuthGuard - isAuthenticated: ${isAuth}, syncFromStorage: ${syncResult}, localStorage has token: ${!!stored}`);
-
   if (isAuth || syncResult || !!stored) {
-    console.log(`[Auth Debug] [${new Date().toISOString()}] AuthGuard - ALLOW`);
     return true;
   }
 
-  console.log(`[Auth Debug] [${new Date().toISOString()}] AuthGuard - REDIRECT to /auth/login`);
   return router.parseUrl('/auth/login');
 };

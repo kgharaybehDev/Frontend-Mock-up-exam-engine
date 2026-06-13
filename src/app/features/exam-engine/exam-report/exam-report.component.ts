@@ -1,20 +1,22 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { ExamProgressService } from '../../../core/services/exam-progress.service';
 import { ExamService } from '../../../core/services/exam.service';
 import { CardComponent } from '../../../shared/components/card/card.component';
-import { ProgressBarComponent } from '../../../shared/components/progress-bar/progress-bar.component';
+import { QuestionNavigatorComponent } from '../components/question-navigator/question-navigator.component';
 import type { ExamReportDto, QuestionDetailDto } from '../../../core/models/report.model';
 
 @Component({
   selector: 'app-exam-report',
   standalone: true,
-  imports: [RouterLink, DatePipe, CardComponent, ProgressBarComponent],
+  imports: [RouterLink, DatePipe, CardComponent, QuestionNavigatorComponent],
   templateUrl: './exam-report.component.html',
 })
 export class ExamReportComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly examService = inject(ExamService);
+  private readonly examProgress = inject(ExamProgressService);
 
   protected readonly attemptId = this.route.snapshot.paramMap.get('id') ?? '';
 
@@ -30,8 +32,7 @@ export class ExamReportComponent implements OnInit {
   protected readonly pageSize = 10;
   protected readonly activeFilter = signal<'All' | 'Incorrect' | 'Flagged'>('All');
   protected readonly expandedQuestions = signal<Set<number>>(new Set());
-
-  protected readonly questionCache = signal<Map<number, { isCorrect: boolean | null; isFlagged: boolean }>>(new Map());
+  protected readonly activeQuestionIndex = signal<number | null>(null);
 
   protected readonly formattedTotalTime = computed(() => {
     const total = this.report()?.totalTimeSeconds ?? 0;
@@ -40,11 +41,14 @@ export class ExamReportComponent implements OnInit {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   });
 
-  protected readonly formattedAvgTime = computed(() => {
-    const avg = this.report()?.avgTimeSeconds ?? 0;
-    const m = Math.floor(avg / 60);
-    const s = Math.round(avg % 60);
-    return `${m}:${s.toString().padStart(2, '0')}`;
+  protected readonly formattedAvgTimeCorrect = computed(() => {
+    const v = this.report()?.avgTimeCorrectAnswersSeconds ?? 0;
+    return `${Math.floor(v / 60)}:${Math.round(v % 60).toString().padStart(2, '0')}`;
+  });
+
+  protected readonly formattedAvgTimeIncorrect = computed(() => {
+    const v = this.report()?.avgTimeIncorrectAnswersSeconds ?? 0;
+    return `${Math.floor(v / 60)}:${Math.round(v % 60).toString().padStart(2, '0')}`;
   });
 
   protected readonly formattedMinTime = computed(() => {
@@ -71,28 +75,13 @@ export class ExamReportComponent implements OnInit {
     }
   });
 
-  protected readonly navGridTotal = computed(() => {
-    const len = this.totalCount();
-    return len > 0 ? Array.from({ length: len }, (_, i) => i + 1) : [];
-  });
-
-  protected readonly currentPageQuestions = computed(() => {
-    const cache = this.questionCache();
-    const start = (this.currentPage() - 1) * this.pageSize;
-    const end = Math.min(start + this.pageSize, this.totalCount());
-    const result: number[] = [];
-    for (let i = start; i < end; i++) {
-      result.push(i + 1);
-    }
-    return result;
-  });
-
   ngOnInit() {
     if (!this.attemptId) {
       this.loading.set(false);
       this.error.set(true);
       return;
     }
+    this.examProgress.loadProgress(this.attemptId).subscribe();
     this.examService.getExamReport(this.attemptId).subscribe({
       next: (res) => {
         if (res.success && res.data) {
@@ -120,7 +109,6 @@ export class ExamReportComponent implements OnInit {
           this.totalCount.set(res.data.totalCount);
           this.totalPages.set(res.data.totalPages);
           this.currentPage.set(res.data.currentPage);
-          this.updateCache(res.data.items);
           this.expandedQuestions.set(new Set());
         } else {
           this.questions.set([]);
@@ -130,16 +118,6 @@ export class ExamReportComponent implements OnInit {
       error: () => {
         this.questionsLoading.set(false);
       },
-    });
-  }
-
-  private updateCache(items: QuestionDetailDto[]) {
-    this.questionCache.update((cache) => {
-      const next = new Map(cache);
-      for (const q of items) {
-        next.set(q.orderIndex, { isCorrect: q.isCorrect, isFlagged: q.isFlagged });
-      }
-      return next;
     });
   }
 
@@ -168,6 +146,7 @@ export class ExamReportComponent implements OnInit {
   }
 
   protected toggleQuestion(index: number) {
+    this.activeQuestionIndex.set(index);
     this.expandedQuestions.update((s) => {
       const next = new Set(s);
       if (next.has(index)) {
@@ -181,10 +160,6 @@ export class ExamReportComponent implements OnInit {
 
   protected isExpanded(index: number): boolean {
     return this.expandedQuestions().has(index);
-  }
-
-  protected questionStatus(qIndex: number) {
-    return this.questionCache().get(qIndex) ?? null;
   }
 
   protected scoreColor(score: number): string {
@@ -205,5 +180,19 @@ export class ExamReportComponent implements OnInit {
 
   protected cleanQuestionBody(body: string): string {
     return body.replace(/<ol[^>]*>[\s\S]*?<\/ol>/gi, '').replace(/<li[^>]*>[\s\S]*?<\/li>/gi, '');
+  }
+
+  protected difficultyLabel(level: number): string {
+    if (level === 1) return 'Easy';
+    if (level === 2) return 'Medium';
+    if (level === 3) return 'Hard';
+    return `Level ${level}`;
+  }
+
+  protected difficultyColor(level: number): string {
+    if (level === 1) return 'bg-emerald-100 text-emerald-700';
+    if (level === 2) return 'bg-amber-100 text-amber-700';
+    if (level === 3) return 'bg-red-100 text-red-700';
+    return 'bg-gray-100 text-gray-600';
   }
 }

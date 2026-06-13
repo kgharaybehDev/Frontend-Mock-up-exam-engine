@@ -71,3 +71,9 @@
 - BEFORE writing code for a new feature, REQUIRED to read `RULES.md` and `llms-full.txt`.
 - Explicitly state that RULES.md and llms-full.txt have been reviewed in the response.
 - These files define the project conventions, coding rules, and Angular 19 API surface that must be followed.
+
+## 14. Exam Progress Persistence (localStorage)
+- Exam progress (current question index, remaining timer seconds, and selected answers) MUST be synced to `localStorage` continuously during the exam session.
+- This prevents data loss on accidental page reloads or browser crashes.
+- On session initialization (`loadSessionFromStart` / `loadSessionFromResume`), check `localStorage` for a saved progress snapshot and restore it if available and valid (matching `attemptId`).
+- Clear the saved progress from `localStorage` upon successful exam submission or explicit abandon.

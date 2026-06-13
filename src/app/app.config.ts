@@ -21,11 +21,7 @@ export const appConfig: ApplicationConfig = {
     { provide: API_BASE_URL, useValue: environment.apiBaseUrl },
     {
       provide: APP_INITIALIZER,
-      useFactory: (auth: AuthService) => () => {
-        console.log(`[Auth Debug] [${new Date().toISOString()}] APP_INITIALIZER - starting syncFromStorage`);
-        const result = auth.syncFromStorage();
-        console.log(`[Auth Debug] [${new Date().toISOString()}] APP_INITIALIZER - completed, hasToken: ${result}`);
-      },
+      useFactory: (auth: AuthService) => () => auth.syncFromStorage(),
       deps: [AuthService],
       multi: true,
     },

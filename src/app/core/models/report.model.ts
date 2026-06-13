@@ -1,3 +1,5 @@
+import type { AttemptAttachmentDto } from './attempt.model';
+
 export interface QuestionOptionDto {
   optionLetter: string;
   optionText: string;
@@ -11,6 +13,14 @@ export interface TopicBreakdownDto {
   correctCount: number;
 }
 
+export interface DifficultyBreakdownDto {
+  level: number;
+  levelName: string;
+  correctCount: number;
+  totalQuestions: number;
+  scorePercent: number;
+}
+
 export interface QuestionDetailDto {
   attemptQuestionId: string;
   orderIndex: number;
@@ -24,6 +34,8 @@ export interface QuestionDetailDto {
   isCorrect: boolean;
   topicName: string;
   explanation: string;
+  difficultyLevel: number;
+  attachments: AttemptAttachmentDto[];
 }
 
 export interface ExamReportDto {
@@ -36,25 +48,13 @@ export interface ExamReportDto {
   minTimeSeconds: number;
   maxTimeSeconds: number;
   avgTimeSeconds: number;
+  avgTimeCorrectAnswersSeconds: number;
+  avgTimeIncorrectAnswersSeconds: number;
   totalFlaggedCount: number;
   totalQuestions: number;
   recommendations: string;
   topicBreakdowns: TopicBreakdownDto[];
-}
-
-export interface QuestionDetailDto {
-  attemptQuestionId: string;
-  orderIndex: number;
-  questionBody: string;
-  questionType: string;
-  options: QuestionOptionDto[];
-  yourAnswer: string;
-  correctAnswer: string;
-  timeSpentSeconds: number;
-  isFlagged: boolean;
-  isCorrect: boolean;
-  topicName: string;
-  explanation: string;
+  difficultyBreakdowns: DifficultyBreakdownDto[];
 }
 
 export interface QuestionPageDto {
