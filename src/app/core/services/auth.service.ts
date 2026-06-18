@@ -4,11 +4,10 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { throwError } from 'rxjs';
 import type { ApiResponse } from '../models/api-response.model';
-import type { ForgotPasswordRequestDto, LoginRequestDto, LoginResponseDto, RefreshTokenRequestDto, RegisterRequestDto, RegisterResponseDto } from '../models/auth.model';
+import type { ForgotPasswordRequestDto, LoginRequestDto, LoginResponseDto, RefreshTokenResponseDto, RegisterRequestDto, RegisterResponseDto } from '../models/auth.model';
 import { API_BASE_URL } from '../tokens/api-url.token';
 
 const ACCESS_TOKEN_KEY = 'proexam_access_token';
-const REFRESH_TOKEN_KEY = 'proexam_refresh_token';
 
 function isTokenExpired(token: string): boolean {
   try {
@@ -29,7 +28,6 @@ export class AuthService {
   private readonly apiBase = inject(API_BASE_URL);
 
   private readonly accessToken = signal<string | null>(null);
-  private readonly refreshToken = signal<string | null>(null);
   readonly currentUser = signal<LoginResponseDto['user'] | null>(null);
   readonly isAuthenticated = computed(() => !!this.accessToken());
 
@@ -48,13 +46,11 @@ export class AuthService {
   }
 
   refresh() {
-    const token = this.refreshToken();
-    if (!token) {
+    if (!this.accessToken()) {
       this.logout();
-      return throwError(() => new Error('No refresh token available'));
+      return throwError(() => new Error('No access token available'));
     }
-    const payload: RefreshTokenRequestDto = { refreshToken: token };
-    return this.http.post<ApiResponse<LoginResponseDto>>(`${this.authApi}/refresh`, payload);
+    return this.http.post<ApiResponse<RefreshTokenResponseDto>>(`${this.authApi}/refresh`, {});
   }
 
   forgotPassword(payload: ForgotPasswordRequestDto) {
@@ -62,10 +58,9 @@ export class AuthService {
   }
 
   logout() {
+    this.http.post<never>(`${this.authApi}/logout`, {}).subscribe({ error: () => {} });
     localStorage.removeItem(ACCESS_TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
     this.accessToken.set(null);
-    this.refreshToken.set(null);
     this.currentUser.set(null);
     this.router.navigate(['/auth/login']);
   }
@@ -86,11 +81,9 @@ export class AuthService {
     }
   }
 
-  setTokens(access: string, refresh: string) {
+  setTokens(access: string) {
     localStorage.setItem(ACCESS_TOKEN_KEY, access);
-    localStorage.setItem(REFRESH_TOKEN_KEY, refresh);
     this.accessToken.set(access);
-    this.refreshToken.set(refresh);
   }
 
   getAccessToken(): string | null {
@@ -99,18 +92,10 @@ export class AuthService {
     return localStorage.getItem(ACCESS_TOKEN_KEY);
   }
 
-  getRefreshToken(): string | null {
-    const fromSignal = this.refreshToken();
-    if (fromSignal) return fromSignal;
-    return localStorage.getItem(REFRESH_TOKEN_KEY);
-  }
-
   syncFromStorage(): boolean {
     const stored = localStorage.getItem(ACCESS_TOKEN_KEY);
-    const storedRefresh = localStorage.getItem(REFRESH_TOKEN_KEY);
     if (stored) {
       this.accessToken.set(stored);
-      if (storedRefresh) this.refreshToken.set(storedRefresh);
     }
     if (stored && !this.currentUser()) {
       this.decodeToken();

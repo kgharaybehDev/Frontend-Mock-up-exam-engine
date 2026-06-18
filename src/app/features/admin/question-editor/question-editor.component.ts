@@ -2,8 +2,9 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { FormBuilder, FormArray, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { QuillEditorComponent } from 'ngx-quill';
-import { AdminApiService } from '../../../core/services/admin-api.service';
-import type { AdminQuestionDetailDto } from '../../../core/models/admin.model';
+import { QuestionService } from '../../../core/services/question.service';
+import type { CreateQuestionDto, QuestionDto } from '../../../core/models/exam.model';
+import type { ApiResponse } from '../../../core/models/api-response.model';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -119,7 +120,7 @@ export class QuestionEditorComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
-  private readonly adminApi = inject(AdminApiService);
+  private readonly questionService = inject(QuestionService);
 
   protected readonly testBankId = signal('');
   protected readonly topicId = signal('');
@@ -182,16 +183,17 @@ export class QuestionEditorComponent implements OnInit {
 
   private loadQuestion(id: string) {
     this.loading.set(true);
-    this.adminApi.getQuestionDetail(id).subscribe({
-      next: (res) => {
+    this.questionService.getById(id).subscribe({
+      next: (res: any) => {
         if (res.success && res.data) {
+          const d = res.data as any;
           this.form.patchValue({
-            body: res.data.body,
-            explanation: res.data.explanation,
-            difficultyLevel: res.data.difficultyLevel,
+            body: d.body,
+            explanation: d.answer?.explanation ?? '',
+            difficultyLevel: d.difficultyLevel,
           });
           this.options.clear();
-          res.data.options.forEach((opt, i) => {
+          (d.options as any[] ?? []).forEach((opt: any, i: number) => {
             this.options.push(this.fb.group({
               optionLetter: [opt.optionLetter, Validators.required],
               optionText: [opt.optionText, Validators.required],
@@ -265,11 +267,14 @@ export class QuestionEditorComponent implements OnInit {
     }
 
     this.saving.set(true);
-    const dto = {
+    const correctAnswer = this.options.controls[ci]?.get('optionLetter')?.value ?? LETTERS[ci];
+    const dto: CreateQuestionDto = {
       topicId: this.topicId(),
       body,
       difficultyLevel: this.form.get('difficultyLevel')?.value ?? 1,
       explanation: this.form.get('explanation')?.value?.trim() ?? '',
+      correctAnswer,
+      attachments: [],
       options: this.options.controls.map((ctrl, i) => ({
         optionLetter: ctrl.get('optionLetter')?.value ?? LETTERS[i],
         optionText: ctrl.get('optionText')?.value?.trim() ?? '',
@@ -279,11 +284,11 @@ export class QuestionEditorComponent implements OnInit {
     };
 
     const obs = this.isEdit()
-      ? this.adminApi.updateQuestion(this.questionId(), dto)
-      : this.adminApi.createQuestion(dto);
+      ? this.questionService.update(this.questionId(), dto)
+      : this.questionService.create(this.topicId(), dto);
 
     obs.subscribe({
-      next: (res) => {
+      next: (res: any) => {
         if (res.success) {
           this.router.navigate(['/admin/testbanks', this.testBankId(), 'topics', this.topicId(), 'questions']);
         } else {

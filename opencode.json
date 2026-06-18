@@ -1,0 +1,25 @@
+{
+  "agent": {
+    "rules": [
+      "Read .opencode/AGENTS.md before any work",
+      "Read RULES.md for Angular 19 conventions",
+      "Read llms-full.txt for UI best practices",
+      "Use inject() pattern — never constructor DI",
+      "Use signals and new control flow only"
+    ],
+    "skills": [
+      "brainstorming",
+      "writing-plans",
+      "subagent-driven-development",
+      "dispatching-parallel-agents",
+      "test-driven-development",
+      "ui-ux-pro-max",
+      "requesting-code-review",
+      "verification-before-completion",
+      "finishing-a-development-branch"
+    ]
+  },
+  "skillPaths": [
+    ".opencode/skills/ui-ux-pro-max"
+  ]
+}

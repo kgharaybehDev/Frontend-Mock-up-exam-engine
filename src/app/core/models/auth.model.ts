@@ -5,7 +5,6 @@ export interface LoginRequestDto {
 
 export interface LoginResponseDto {
   accessToken: string;
-  refreshToken: string;
   expiresIn: number;
   tokenType: string;
   user: LoginUserDto;
@@ -37,18 +36,9 @@ export interface RegisterResponseDto {
   role: string;
 }
 
-export interface RefreshTokenRequestDto {
-  refreshToken: string;
-}
-
 export interface RefreshTokenResponseDto {
   accessToken: string;
-  refreshToken: string;
   expiresIn: number;
-}
-
-export interface LogoutRequestDto {
-  refreshToken: string;
 }
 
 export interface RegisterExpertRequestDto {

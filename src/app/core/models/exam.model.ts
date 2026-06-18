@@ -92,6 +92,13 @@ export interface QuestionAttachmentDto {
   languageCode: string;
 }
 
+export interface QuestionOptionInputDto {
+  optionLetter: string;
+  optionText: string;
+  isCorrect: boolean;
+  displayOrder: number;
+}
+
 export interface CreateQuestionDto {
   topicId: string;
   body: string;
@@ -99,6 +106,7 @@ export interface CreateQuestionDto {
   correctAnswer: string;
   explanation: string;
   attachments: QuestionAttachmentDto[];
+  options: QuestionOptionInputDto[];
 }
 
 export interface TestBankDto {

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { AdminApiService } from '../../../core/services/admin-api.service';
-import type { TopicListItemDto } from '../../../core/models/admin.model';
+import { TopicService } from '../../../core/services/topic.service';
+import { TestBankService } from '../../../core/services/test-bank.service';
 
 @Component({
   selector: 'app-topics',
@@ -25,16 +25,9 @@ import type { TopicListItemDto } from '../../../core/models/admin.model';
             class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <textarea #descInput placeholder="Description" rows="2" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-          <input
-            #countInput
-            type="number"
-            min="0"
-            placeholder="Default Questions Count"
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
           <div class="flex gap-2 justify-end">
             <button type="button" class="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50" (click)="showCreate = false">Cancel</button>
-            <button type="button" class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700" (click)="createTopic(nameInput, descInput, countInput)">Create</button>
+            <button type="button" class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700" (click)="createTopic(nameInput, descInput)">Create</button>
           </div>
         </div>
       }
@@ -48,17 +41,9 @@ import type { TopicListItemDto } from '../../../core/models/admin.model';
             class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <textarea #editDescInput placeholder="Description" rows="2" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">{{ et.description }}</textarea>
-          <input
-            #editCountInput
-            type="number"
-            min="0"
-            [value]="et.defaultQuestionsCount"
-            placeholder="Default Questions Count"
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
           <div class="flex gap-2 justify-end">
             <button type="button" class="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50" (click)="editTopic.set(null)">Cancel</button>
-            <button type="button" class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700" (click)="saveEdit(et.id, editNameInput, editDescInput, editCountInput)">Save</button>
+            <button type="button" class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700" (click)="saveEdit(et.id, editNameInput, editDescInput)">Save</button>
           </div>
         </div>
       }
@@ -103,14 +88,14 @@ import type { TopicListItemDto } from '../../../core/models/admin.model';
 })
 export class TopicsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
-  private readonly adminApi = inject(AdminApiService);
+  private readonly topicService = inject(TopicService);
 
   protected readonly testBankId = signal('');
-  protected readonly topics = signal<TopicListItemDto[]>([]);
+  protected readonly topics = signal<any[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
   protected showCreate = false;
-  protected readonly editTopic = signal<TopicListItemDto | null>(null);
+  protected readonly editTopic = signal<any | null>(null);
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('testBankId');
@@ -122,33 +107,33 @@ export class TopicsComponent implements OnInit {
 
   private loadTopics(testBankId: string) {
     this.loading.set(true);
-    this.adminApi.getTopics(testBankId).subscribe({
-      next: (res) => { this.topics.set(res.data?.items ?? []); this.loading.set(false); },
+    this.topicService.getByTestBank(testBankId).subscribe({
+      next: (res: any) => { this.topics.set(res.data ?? []); this.loading.set(false); },
       error: () => { this.error.set('Failed to load topics.'); this.loading.set(false); },
     });
   }
 
-  protected createTopic(name: HTMLInputElement, desc: HTMLTextAreaElement, count: HTMLInputElement) {
+  protected createTopic(name: HTMLInputElement, desc: HTMLTextAreaElement) {
     const nameVal = name.value.trim();
     if (!nameVal) return;
-    this.adminApi.createTopic({ testBankId: this.testBankId(), name: nameVal, description: desc.value.trim(), defaultQuestionsCount: parseInt(count.value, 10) || 0 }).subscribe({
+    this.topicService.create(this.testBankId(), { name: nameVal, description: desc.value.trim() }).subscribe({
       next: () => { this.showCreate = false; this.loadTopics(this.testBankId()); },
     });
   }
 
-  protected startEdit(topic: TopicListItemDto) {
+  protected startEdit(topic: any) {
     this.editTopic.set(topic);
   }
 
-  protected saveEdit(id: string, name: HTMLInputElement, desc: HTMLTextAreaElement, count: HTMLInputElement) {
+  protected saveEdit(id: string, name: HTMLInputElement, desc: HTMLTextAreaElement) {
     const nameVal = name.value.trim();
     if (!nameVal) return;
-    this.adminApi.updateTopic(id, { name: nameVal, description: desc.value.trim(), defaultQuestionsCount: parseInt(count.value, 10) || 0 }).subscribe({
+    this.topicService.update(this.testBankId(), id, { name: nameVal, description: desc.value.trim() }).subscribe({
       next: () => { this.editTopic.set(null); this.loadTopics(this.testBankId()); },
     });
   }
 
-  protected toggleActive(topic: TopicListItemDto) {
-    this.adminApi.toggleTopic(topic.id).subscribe({ next: () => this.loadTopics(this.testBankId()) });
+  protected toggleActive(topic: any) {
+    this.topicService.toggleActive(topic.id).subscribe({ next: () => this.loadTopics(this.testBankId()) });
   }
 }

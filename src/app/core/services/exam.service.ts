@@ -45,6 +45,7 @@ export class ExamService {
   private readonly apiBase = inject(API_BASE_URL);
 
   private readonly examApi = `${this.apiBase}/api/v1/exams`;
+  private readonly attemptApi = `${this.apiBase}/api/v1/attempts`;
 
   readonly session = signal<ExamSession | null>(null);
   readonly currentIndex = signal(0);
@@ -70,11 +71,11 @@ export class ExamService {
   }
 
   resumeExam(attemptId: string) {
-    return this.http.get<ApiResponse<AttemptResumeDto>>(`${this.examApi}/${attemptId}/resume`);
+    return this.http.get<ApiResponse<AttemptResumeDto>>(`${this.attemptApi}/${attemptId}`);
   }
 
   saveAnswer(attemptId: string, attemptQuestionId: string, answerText: string) {
-    return this.http.put<ApiResponse<unknown>>(`${this.examApi}/${attemptId}/questions/${attemptQuestionId}/answer`, { answerText });
+    return this.http.put<ApiResponse<unknown>>(`${this.attemptApi}/${attemptId}/questions/${attemptQuestionId}/answer`, { answerText });
   }
 
   autosave(attemptId: string) {
@@ -85,7 +86,7 @@ export class ExamService {
         answerText,
       })),
     };
-    return this.http.post<ApiResponse<unknown>>(`${this.examApi}/${attemptId}/autosave`, body);
+    return this.http.post<ApiResponse<unknown>>(`${this.attemptApi}/${attemptId}/autosave`, body);
   }
 
   startAutosaveInterval(attemptId: string) {
@@ -103,11 +104,11 @@ export class ExamService {
   }
 
   flagQuestion(attemptId: string, attemptQuestionId: string, isFlagged: boolean) {
-    return this.http.post<ApiResponse<unknown>>(`${this.examApi}/${attemptId}/flag`, { attemptQuestionId, isFlagged });
+    return this.http.put<ApiResponse<unknown>>(`${this.attemptApi}/${attemptId}/questions/${attemptQuestionId}/flag`, { isFlagged });
   }
 
   finishExam(attemptId: string, finalAnswers: FinalAnswerSubmission[]) {
-    return this.http.post<ApiResponse<AttemptSubmitResultDto>>(`${this.examApi}/${attemptId}/submit`, { finalAnswers });
+    return this.http.post<ApiResponse<AttemptSubmitResultDto>>(`${this.attemptApi}/${attemptId}/submit`, { finalAnswers });
   }
 
   abandonExam(attemptId: string) {
@@ -129,7 +130,7 @@ export class ExamService {
 
   loadSessionFromStart(data: AttemptStartDto) {
     const questions = this.normalizeQuestions(data);
-    const remainingSeconds = Math.max(data.durationMinutes * 60, data.durationSeconds);
+    const remainingSeconds = data.durationMinutes * 60 + data.durationSeconds;
     this.session.set({
       attemptId: data.attemptId,
       examId: data.examId,

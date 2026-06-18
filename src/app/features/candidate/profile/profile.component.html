@@ -1,0 +1,87 @@
+<div class="max-w-2xl mx-auto p-6 space-y-8">
+  <h1 class="text-2xl font-bold text-gray-900">My Profile</h1>
+
+  @if (loading()) {
+    <div class="text-gray-500">Loading profile...</div>
+  } @else if (error()) {
+    <div class="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700" role="alert">
+      {{ error() }}
+    </div>
+  } @else {
+    <section class="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+      <h2 class="text-lg font-semibold text-gray-900">Account Details</h2>
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <dt class="text-sm text-gray-500">Email</dt>
+          <dd class="text-gray-900 font-medium">{{ profile()?.email }}</dd>
+        </div>
+        <div>
+          <dt class="text-sm text-gray-500">First Name</dt>
+          <dd class="text-gray-900 font-medium">{{ profile()?.firstName }}</dd>
+        </div>
+        <div>
+          <dt class="text-sm text-gray-500">Last Name</dt>
+          <dd class="text-gray-900 font-medium">{{ profile()?.lastName }}</dd>
+        </div>
+        <div>
+          <dt class="text-sm text-gray-500">Member Since</dt>
+          <dd class="text-gray-900 font-medium">{{ profile()?.createdAt | date }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+      <h2 class="text-lg font-semibold text-gray-900">Edit Profile</h2>
+
+      @if (serverError()) {
+        <div class="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700" role="alert">
+          {{ serverError() }}
+        </div>
+      }
+
+      <app-input-field
+        formControlName="specialization"
+        label="Specialization"
+        placeholder="e.g. Cardiology"
+        [error]="specializationControl.touched ? (specializationControl.errors ? ' ' : '') : ''"
+      >
+        @if (specializationControl.touched && specializationControl.errors) {
+          <app-form-errors [control]="specializationControl" />
+        }
+      </app-input-field>
+
+      <app-input-field
+        formControlName="certificationTarget"
+        label="Certification Target"
+        placeholder="e.g. Board Certification"
+        [error]="certificationTargetControl.touched ? (certificationTargetControl.errors ? ' ' : '') : ''"
+      >
+        @if (certificationTargetControl.touched && certificationTargetControl.errors) {
+          <app-form-errors [control]="certificationTargetControl" />
+        }
+      </app-input-field>
+
+      <app-input-field
+        formControlName="country"
+        label="Country"
+        placeholder="e.g. United States"
+        [required]="true"
+        [error]="countryControl.touched ? (countryControl.errors ? ' ' : '') : ''"
+      >
+        @if (countryControl.touched && countryControl.errors) {
+          <app-form-errors [control]="countryControl" />
+        }
+      </app-input-field>
+
+      <button
+        app-button
+        type="submit"
+        color="primary"
+        [loading]="isSaving()"
+        [disabled]="form.invalid && form.touched"
+      >
+        Save Changes
+      </button>
+    </form>
+  }
+</div>

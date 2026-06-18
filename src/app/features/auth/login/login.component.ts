@@ -49,13 +49,13 @@ export class LoginComponent {
       next: (res) => {
         this.isLoading.set(false);
 
-        const { accessToken, refreshToken, user } = res.data;
-        if (!accessToken || !refreshToken) {
+        const { accessToken, user } = res.data;
+        if (!accessToken) {
           this.serverError.set('Authentication failed: Invalid server response. Please try again later.');
           return;
         }
 
-        this.authService.setTokens(accessToken, refreshToken);
+        this.authService.setTokens(accessToken);
         this.authService.currentUser.set(user);
 
         const role = user.role.toLowerCase();

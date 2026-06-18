@@ -38,8 +38,6 @@ export interface TestBankListItemDto {
   certificationType: string;
   description: string;
   isActive: boolean;
-  topicCount: number;
-  totalQuestions: number;
 }
 
 export interface TopicListItemDto {
@@ -49,7 +47,6 @@ export interface TopicListItemDto {
   description: string;
   isActive: boolean;
   totalQuestions: number;
-  defaultQuestionsCount: number;
 }
 
 export interface CreateTestBankDto {
@@ -63,7 +60,6 @@ export interface CreateTopicDto {
   testBankId: string;
   name: string;
   description: string;
-  defaultQuestionsCount: number;
 }
 
 export interface QuestionOptionDto {
@@ -78,6 +74,7 @@ export interface AdminCreateQuestionDto {
   body: string;
   difficultyLevel: number;
   explanation: string;
+  correctAnswer: string;
   options: QuestionOptionDto[];
 }
 
@@ -101,6 +98,7 @@ export interface AdminQuestionDetailDto {
   difficultyLevel: number;
   isActive: boolean;
   explanation: string;
+  correctAnswer: string;
   options: QuestionOptionDto[];
   createdAt: string;
 }

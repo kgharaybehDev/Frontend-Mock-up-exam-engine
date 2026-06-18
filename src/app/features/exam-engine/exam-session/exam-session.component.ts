@@ -185,9 +185,9 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     this.timerInterval = setInterval(() => {
       const s = this.examService.session();
       if (s && s.remainingSeconds > 0) {
-        s.remainingSeconds--;
-        this.examService.session.set({ ...s });
-        if (s.remainingSeconds <= 0) {
+        const next = s.remainingSeconds - 1;
+        this.examService.session.set({ ...s, remainingSeconds: next });
+        if (next <= 0) {
           this.onTimeUp();
         }
       }

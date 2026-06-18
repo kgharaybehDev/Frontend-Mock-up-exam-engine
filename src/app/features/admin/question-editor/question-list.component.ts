@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { AdminApiService } from '../../../core/services/admin-api.service';
-import type { AdminQuestionListItemDto } from '../../../core/models/admin.model';
+import { QuestionService } from '../../../core/services/question.service';
 
 @Component({
   selector: 'app-question-list',
@@ -33,7 +32,7 @@ import type { AdminQuestionListItemDto } from '../../../core/models/admin.model'
                       <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500 shrink-0 mt-0.5">Inactive</span>
                     }
                   </div>
-                  @if (q.options.length) {
+                  @if (q.options?.length) {
                     <div class="space-y-1">
                       @for (opt of q.options; track opt.optionLetter) {
                         <div class="text-xs min-w-0 break-all" [class.text-green-700]="opt.isCorrect" [class.font-semibold]="opt.isCorrect" [class.text-gray-500]="!opt.isCorrect">
@@ -69,11 +68,11 @@ import type { AdminQuestionListItemDto } from '../../../core/models/admin.model'
 })
 export class QuestionListComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
-  private readonly adminApi = inject(AdminApiService);
+  private readonly questionService = inject(QuestionService);
 
   protected readonly testBankId = signal('');
   protected readonly topicId = signal('');
-  protected readonly questions = signal<AdminQuestionListItemDto[]>([]);
+  protected readonly questions = signal<any[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
 
@@ -89,13 +88,13 @@ export class QuestionListComponent implements OnInit {
 
   private loadQuestions(topicId: string) {
     this.loading.set(true);
-    this.adminApi.getQuestions(topicId).subscribe({
-      next: (res) => { this.questions.set(res.data?.items ?? []); this.loading.set(false); },
+    this.questionService.getByTopic(topicId).subscribe({
+      next: (res: any) => { this.questions.set(res.data?.items ?? []); this.loading.set(false); },
       error: () => { this.error.set('Failed to load questions.'); this.loading.set(false); },
     });
   }
 
-  protected toggleActive(q: AdminQuestionListItemDto) {
-    this.adminApi.toggleQuestion(q.id).subscribe({ next: () => this.loadQuestions(this.topicId()) });
+  protected toggleActive(q: any) {
+    this.questionService.toggleActive(q.id).subscribe({ next: () => this.loadQuestions(this.topicId()) });
   }
 }

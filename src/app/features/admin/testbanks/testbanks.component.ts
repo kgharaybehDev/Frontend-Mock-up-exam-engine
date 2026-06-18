@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AdminApiService } from '../../../core/services/admin-api.service';
-import type { TestBankListItemDto } from '../../../core/models/admin.model';
+import { TestBankService } from '../../../core/services/test-bank.service';
 
 @Component({
   selector: 'app-testbanks',
@@ -48,7 +47,7 @@ import type { TestBankListItemDto } from '../../../core/models/admin.model';
                     <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">Inactive</span>
                   }
                 </div>
-                <p class="text-xs text-gray-500 mt-0.5">{{ tb.country }} · {{ tb.certificationType }} · {{ tb.topicCount }} topics · {{ tb.totalQuestions }} questions</p>
+                <p class="text-xs text-gray-500 mt-0.5">{{ tb.country }} · {{ tb.certificationType }}</p>
               </div>
               <button
                 type="button"
@@ -70,9 +69,9 @@ import type { TestBankListItemDto } from '../../../core/models/admin.model';
   `,
 })
 export class TestbanksComponent implements OnInit {
-  private readonly adminApi = inject(AdminApiService);
+  private readonly testBankService = inject(TestBankService);
 
-  protected readonly testbanks = signal<TestBankListItemDto[]>([]);
+  protected readonly testbanks = signal<any[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
   protected showCreate = false;
@@ -83,8 +82,8 @@ export class TestbanksComponent implements OnInit {
 
   private loadTestBanks() {
     this.loading.set(true);
-    this.adminApi.getTestBanks().subscribe({
-      next: (res) => { this.testbanks.set(res.data?.items ?? []); this.loading.set(false); },
+    this.testBankService.getAll().subscribe({
+      next: (res: any) => { this.testbanks.set(res.data?.items ?? []); this.loading.set(false); },
       error: () => { this.error.set('Failed to load test banks.'); this.loading.set(false); },
     });
   }
@@ -92,12 +91,12 @@ export class TestbanksComponent implements OnInit {
   protected createTestBank(name: HTMLInputElement, country: HTMLInputElement, cert: HTMLInputElement, desc: HTMLTextAreaElement) {
     const nameVal = name.value.trim();
     if (!nameVal) return;
-    this.adminApi.createTestBank({ name: nameVal, country: country.value.trim(), certificationType: cert.value.trim(), description: desc.value.trim() }).subscribe({
+    this.testBankService.create({ name: nameVal, country: country.value.trim(), certificationType: cert.value.trim(), description: desc.value.trim() }).subscribe({
       next: () => { this.showCreate = false; this.loadTestBanks(); },
     });
   }
 
-  protected toggleActive(tb: TestBankListItemDto) {
-    this.adminApi.toggleTestBank(tb.id).subscribe({ next: () => this.loadTestBanks() });
+  protected toggleActive(tb: any) {
+    this.testBankService.toggleActive(tb.id).subscribe({ next: () => this.loadTestBanks() });
   }
 }
